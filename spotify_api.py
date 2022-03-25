@@ -22,7 +22,6 @@ class spotify_api:
         #* Searches for song using Spotify's search feature
         search_results = self.sp.search(q=f"track:{song} artist:{artist}", limit=1, offset=0, type='track', market="US")
         items = search_results["tracks"]["items"]
-        print(items)
         
         if items:
             return items[0]['id']
