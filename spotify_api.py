@@ -1,5 +1,6 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import numpy as np
 
 class spotify_api:
 
@@ -20,8 +21,13 @@ class spotify_api:
     def track_id_finder(self, song, artist):
         #* Searches for song using Spotify's search feature
         search_results = self.sp.search(q=f"track:{song} artist:{artist}", limit=1, offset=0, type='track', market="US")
-
-        return search_results["tracks"]["items"][0]['id']
+        items = search_results["tracks"]["items"]
+        print(items)
+        
+        if items:
+            return items[0]['id']
+        return np.nan
+        
 
     def audio_features_finder(self, track_id):
         audio_features = self.sp.audio_features(track_id)
