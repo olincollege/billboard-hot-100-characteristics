@@ -20,9 +20,10 @@ class spotify_api:
     
     def track_id_finder(self, song, artist):
         #* Searches for song using Spotify's search feature
+        print(song)
         search_results = self.sp.search(q=f"track:{song} artist:{artist}", limit=1, offset=0, type='track', market="US")
+        print(search_results)
         items = search_results["tracks"]["items"]
-        
         if items:
             return items[0]['id']
         return np.nan
@@ -30,4 +31,6 @@ class spotify_api:
 
     def audio_features_finder(self, track_id):
         audio_features = self.sp.audio_features(track_id)
+        if audio_features[0] == None:
+            return np.nan
         return audio_features
