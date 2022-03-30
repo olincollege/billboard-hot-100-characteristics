@@ -14,7 +14,7 @@ def merge():
     charts['rank'] = pd.to_numeric(charts['rank'])
     charts = charts.sort_values('rank')
     charts.drop_duplicates(subset='title', inplace=True)
-    charts.reset_index(inplace=True)
+    charts.reset_index(drop=True, inplace=True)
     return charts
 
 def replace_featuring(charts):
