@@ -14,7 +14,7 @@ def merge():
 
     ts = pd.Timestamp('1958-08-04')
     charts = pd.DataFrame()
-    while ts < pd.Timestamp.now():
+    while ts < pd.Timestamp('2022-03-21'):
         week = ts.strftime('%Y-%m-%d')
         path = f'data/{week}.feather'
         chart = pd.read_feather(path)
@@ -41,8 +41,7 @@ def replace_featuring(charts):
         with a comma
    '''
 
-   for artist in charts['artist']:
-       artist = artist.replace(' Featuring', ',')
+   charts['artist'] = charts['artist'].str.replace(' Featuring', ',')
    return charts
 
 def main():

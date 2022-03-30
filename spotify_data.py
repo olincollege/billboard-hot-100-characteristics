@@ -34,14 +34,14 @@ def get_features(charts):
             relevant Spotify characteristics
     '''
     ATTRIBUTES = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
-                'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo',
-                'duration_ms', 'time_signature']
-    for i in range(0, len(charts), 100):
+            'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo',
+            'duration_ms', 'time_signature']
+    for i in range(0, 1000, 100):
         subset = charts.iloc[i:i+100]
-        audio_features = sp.audio_features_finder(subset['trackid'])
+        audio_features = spotify_data.sp.audio_features_finder(subset['trackid'])
         toadd = pd.DataFrame(audio_features)[ATTRIBUTES]
-        toadd['title'] = subset['title']
-        charts = charts.merge(toadd, how='left')
+        toadd.set_index(np.arange(i, i+100), inplace=True)
+        charts.update(toadd)
     
     return charts
 
@@ -60,7 +60,7 @@ def main():
     add in the track IDs, drop any NaNs, add columns with the song
     characteristics, and save the output to charts_clean.feather
     '''
-    pd.read_feather('charts_merged.feather')
+    charts = pd.read_feather('charts_merged.feather')
     charts_id = get_track_ids(charts)
     charts_clean = clean_data(charts_id)
     charts_features = get_features(charts_clean)
