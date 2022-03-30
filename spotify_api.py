@@ -1,6 +1,7 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import numpy as np
+import pandas as pd
 
 class spotify_api:
 
@@ -18,19 +19,21 @@ class spotify_api:
                                                 redirect_uri = self.SPOTIPY_REDIRECT_URI,
                                                 scope = "user-library-read"))
     
-    def track_id_finder(self, song, artist):
-        #* Searches for song using Spotify's search feature
-        print(song)
-        search_results = self.sp.search(q=f"track:{song} artist:{artist}", limit=1, offset=0, type='track', market="US")
-        print(search_results)
-        items = search_results["tracks"]["items"]
-        if items:
-            return items[0]['id']
-        return np.nan
+    def track_id_finder(self, songs, artists):
+        # Searches for songs using Spotify's search feature
+        ids = []
+        length = len(songs)
+        for song, artist, idx in zip(songs, artists, range(length)):
+            search_results = self.sp.search(q=f"track:{song} artist:{artist}", limit=1, offset=0, type='track', market="US")
+            if (items := search_results["tracks"]["items"]): 
+                ids.append(items[0]['id'])
+            else:
+                ids.append(np.nan)
+            if idx % 10 == 0:
+                print(idx*100/length)
+        return pd.Series(ids)
         
 
-    def audio_features_finder(self, track_id):
-        audio_features = self.sp.audio_features(track_id)
-        if audio_features[0] == None:
-            return np.nan
+    def audio_features_finder(self, track_ids):
+        audio_features = self.sp.audio_features(track_ids)
         return audio_features
