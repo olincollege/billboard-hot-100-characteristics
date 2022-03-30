@@ -2,9 +2,18 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import numpy as np
-from pprint import pprint
 
 def scrape_chart(url, week):
+    '''
+    Scrape a singular Billboard Hot 100 chart from a given week
+
+    Args:
+        url (string): URL from which to scrape chart
+        week (string): The week the chart is from
+
+    Returns:
+        DataFrame with all the chart's songs, along with their artist and rank
+    '''
     src = requests.get(url).text
     soup = BeautifulSoup(src, 'lxml')
     rows = soup.select('.o-chart-results-list-row') # Pull out the ul for each chart row
@@ -19,6 +28,17 @@ def scrape_chart(url, week):
     return pd.DataFrame(songs)
 
 def scrape_all():
+    '''
+    Scrape all Billboard Hot 100 charts from its inception in 1958 to the
+    present day and saves them as individual feather files within the 'data'
+    folder (which must be present in the current directory).
+
+    Args:
+        None
+
+    Returns:
+        None (writes series of feather files to data folder)
+    '''
     ts = pd.Timestamp('1958-08-04')
     chart = pd.DataFrame()
 
