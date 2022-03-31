@@ -26,7 +26,7 @@ def scrape_chart(url, week):
         songs['rank'].append(row.li.find('span').get_text().strip())
         songs['title'].append(row.find('h3').get_text().strip())
         songs['artist'].append(row.find_all(
-            'li')[3].find('span').get_text().strip())
+                'li')[3].find('span').get_text().strip())
 
     songs['week'] = len(songs['rank']) * [week]
     return pd.DataFrame(songs)
