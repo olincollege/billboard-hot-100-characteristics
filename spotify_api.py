@@ -1,10 +1,13 @@
+'''
+Wrapper class for Spotify Web API
+'''
+
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import pandas as pd
 
-
-class spotify_api:
+class SpotifyAPI:
     '''
     Wrapper class for spotify API that handles authentication and wraps the
     functions we require
@@ -26,15 +29,15 @@ class spotify_api:
             None
         '''
         # This file must be created by the user
-        with open('spotify_creds.txt') as f:
-            lines = [line.strip() for line in f.readlines()]
-            self.SPOTIPY_CLIENT_ID = lines[0]
-            self.SPOTIPY_CLIENT_SECRET = lines[1]
+        with open('spotify_creds.txt', encoding="utf-8") as creds:
+            lines = [line.strip() for line in creds.readlines()]
+            self.client_id = lines[0]
+            self.client_secret = lines[1]
 
         # Create and authenticate Spotify object
-        authmanager = SpotifyClientCredentials(client_id=self.SPOTIPY_CLIENT_ID,
-                                               client_secret=self.SPOTIPY_CLIENT_SECRET)
-        self.sp = spotipy.Spotify(auth_manager=authmanager)
+        authmanager = SpotifyClientCredentials(client_id=self.client_id,
+                                               client_secret=self.client_secret)
+        self.spotify = spotipy.Spotify(auth_manager=authmanager)
 
     def track_id_finder(self, songs, artists):
         '''
@@ -52,10 +55,9 @@ class spotify_api:
 
         # Searches for songs using Spotify's search feature
         ids = []
-        length = len(songs)
-        for song, artist, idx in zip(songs, artists, range(length)):
+        for song, artist in zip(songs, artists):
 
-            search_results = self.sp.search(
+            search_results = self.spotify.search(
                 q=f"track:{song} artist:{artist}", limit=1,
                 offset=0, type='track', market="US")
 
@@ -75,9 +77,9 @@ class spotify_api:
             track_ids (List[str]): List of track_ids from which to get audio
                 features. Must be cleaned of NaNs and have a length of under
                 100 as per the API's limitations.
-        Returns: 
+        Returns:
             audio_features (List[dict]): List of dictionaries containing all of
                 the song features for the given songs in sequential order
         '''
-        audio_features = self.sp.audio_features(track_ids)
+        audio_features = self.spotify.audio_features(track_ids)
         return audio_features

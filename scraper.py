@@ -1,8 +1,9 @@
+'''
+Scrapes Billboard web page for all Hot 100 Charts and saves them locally
+'''
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
-import numpy as np
-
 
 def scrape_chart(url, week):
     '''
@@ -44,21 +45,21 @@ def scrape_all():
         None (writes series of feather files to data folder)
     '''
     # Set initial Timestamp. Change to start from a different date
-    ts = pd.Timestamp('1958-08-04')
+    current_week = pd.Timestamp('1958-08-04')
     chart = pd.DataFrame()
 
-    while ts < pd.Timestamp.now():
-        week = ts.strftime('%Y-%m-%d')
+    while current_week < pd.Timestamp.now():
+        week = current_week.strftime('%Y-%m-%d')
         print(week)
         url = f'https://www.billboard.com/charts/hot-100/{week}'
         chart = scrape_chart(url, week)
         chart.to_feather(f'data/{week}.feather')
-        ts += pd.Timedelta(days=7)
+        current_week += pd.Timedelta(days=7)
 
 
 def main():
+    '''Scrape all charts when run directly'''
     scrape_all()
-
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,8 @@
-import pandas as pd
+'''
+Merge and clean individual data files created from scraper.py into one dataset
+'''
 
+import pandas as pd
 
 def merge():
     '''
@@ -15,15 +18,15 @@ def merge():
 
     # Set initial Timestamp. Change if you would like to start from a different
     # start date
-    ts = pd.Timestamp('1958-08-04')
+    current_week = pd.Timestamp('1958-08-04')
     charts = pd.DataFrame()
 
-    while ts < pd.Timestamp('2022-03-21'):
-        week = ts.strftime('%Y-%m-%d')
+    while current_week < pd.Timestamp('2022-03-21'):
+        week = current_week.strftime('%Y-%m-%d')
         path = f'data/{week}.feather'
         chart = pd.read_feather(path)
         charts = pd.concat([charts, chart])
-        ts += pd.Timedelta(days=7)
+        current_week += pd.Timedelta(days=7)
 
     charts['rank'] = pd.to_numeric(charts['rank'])
 
