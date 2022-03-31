@@ -2,7 +2,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
+
 
 class spotify_api:
     '''
@@ -25,14 +25,17 @@ class spotify_api:
         Args:
             None
         '''
+        # This file must be created by the user
         with open('spotify_creds.txt') as f:
             lines = [line.strip() for line in f.readlines()]
             self.SPOTIPY_CLIENT_ID = lines[0]
             self.SPOTIPY_CLIENT_SECRET = lines[1]
 
-        self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id = self.SPOTIPY_CLIENT_ID,
-                                                client_secret = self.SPOTIPY_CLIENT_SECRET))
-    
+        # Create and authenticate Spotify object
+        authmanager = SpotifyClientCredentials(client_id=self.SPOTIPY_CLIENT_ID,
+                                               client_secret=self.SPOTIPY_CLIENT_SECRET)
+        self.sp = spotipy.Spotify(auth_manager=authmanager)
+
     def track_id_finder(self, songs, artists):
         '''
         Search Spotify API for track IDs for a list of songs and corresponding
@@ -50,16 +53,19 @@ class spotify_api:
         # Searches for songs using Spotify's search feature
         ids = []
         length = len(songs)
-        for song, artist, idx in tqdm(zip(songs, artists, range(length))):
-            search_results = self.sp.search(q=f"track:{song} artist:{artist}", limit=1, offset=0, type='track', market="US")
-            if (items := search_results["tracks"]["items"]): 
+        for song, artist, idx in zip(songs, artists, range(length)):
+
+            search_results = self.sp.search(
+                q=f"track:{song} artist:{artist}", limit=1,
+                offset=0, type='track', market="US")
+
+            if (items := search_results["tracks"]["items"]):
                 ids.append(items[0]['id'])
             else:
+                # Results not found
                 ids.append(np.nan)
-            if idx % 10 == 0:
-                print(idx*100/length)
+
         return pd.Series(ids)
-        
 
     def audio_features_finder(self, track_ids):
         '''

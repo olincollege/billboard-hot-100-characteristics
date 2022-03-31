@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import numpy as np
 
+
 def scrape_chart(url, week):
     '''
     Scrape a singular Billboard Hot 100 chart from a given week
@@ -16,16 +17,19 @@ def scrape_chart(url, week):
     '''
     src = requests.get(url).text
     soup = BeautifulSoup(src, 'lxml')
-    rows = soup.select('.o-chart-results-list-row') # Pull out the ul for each chart row
+    # Pull out the ul for each chart row
+    rows = soup.select('.o-chart-results-list-row')
     songs = {'rank': [], 'title': [], 'artist': []}
 
     for row in rows:
         songs['rank'].append(row.li.find('span').get_text().strip())
         songs['title'].append(row.find('h3').get_text().strip())
-        songs['artist'].append(row.find_all('li')[3].find('span').get_text().strip())    
-    
+        songs['artist'].append(row.find_all(
+            'li')[3].find('span').get_text().strip())
+
     songs['week'] = len(songs['rank']) * [week]
     return pd.DataFrame(songs)
+
 
 def scrape_all():
     '''
@@ -39,6 +43,7 @@ def scrape_all():
     Returns:
         None (writes series of feather files to data folder)
     '''
+    # Set initial Timestamp. Change to start from a different date
     ts = pd.Timestamp('1958-08-04')
     chart = pd.DataFrame()
 
@@ -50,8 +55,10 @@ def scrape_all():
         chart.to_feather(f'data/{week}.feather')
         ts += pd.Timedelta(days=7)
 
+
 def main():
     scrape_all()
+
 
 if __name__ == '__main__':
     main()

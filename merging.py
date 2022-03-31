@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def merge():
     '''
     Read weekly charts from data folder and combine them into one Pandas
@@ -12,8 +13,11 @@ def merge():
         Pandas DataFrame with every song that charted on the Billboard Hot 100
     '''
 
+    # Set initial Timestamp. Change if you would like to start from a different
+    # start date
     ts = pd.Timestamp('1958-08-04')
     charts = pd.DataFrame()
+
     while ts < pd.Timestamp('2022-03-21'):
         week = ts.strftime('%Y-%m-%d')
         path = f'data/{week}.feather'
@@ -22,27 +26,32 @@ def merge():
         ts += pd.Timedelta(days=7)
 
     charts['rank'] = pd.to_numeric(charts['rank'])
+
+    # Sort by rank and drop duplicates, keeping the one with the highest rank
     charts = charts.sort_values('rank')
     charts.drop_duplicates(subset='title', inplace=True)
+
     charts.reset_index(drop=True, inplace=True)
     return charts
 
+
 def replace_featuring(charts):
-   '''
-   Change format for songs with multiple artist by removing the word
-   'Featuring' and replacing it with a comma so they are compatible with the
-   Spotify search function
-   
-   Args:
-       charts (DataFrame): DataFrame returned by merge() function
+    '''
+    Change format for songs with multiple artist by removing the word
+    'Featuring' and replacing it with a comma so they are compatible with the
+    Spotify search function
 
-    Returns:
-        DataFrame with instances of 'Featuring' in the artists column replaced
-        with a comma
-   '''
+    Args:
+        charts (DataFrame): DataFrame returned by merge() function
 
-   charts['artist'] = charts['artist'].str.replace(' Featuring', ',')
-   return charts
+     Returns:
+         DataFrame with instances of 'Featuring' in the artists column replaced
+         with a comma
+    '''
+
+    charts['artist'] = charts['artist'].str.replace(' Featuring', ',')
+    return charts
+
 
 def main():
     '''
@@ -51,6 +60,7 @@ def main():
     charts = merge()
     charts_clean = replace_featuring(charts)
     charts_clean.to_feather('charts_merged.feather')
+
 
 if __name__ == '__main__':
     main()

@@ -4,6 +4,7 @@ import pandas as pd
 
 sp = spotify_api()
 
+
 def get_track_ids(charts):
     '''
     Add column to charts DataFrame containing Spotify track IDs for each song
@@ -20,6 +21,7 @@ def get_track_ids(charts):
     charts['trackid'] = sp.track_id_finder(charts['title'], charts['artist'])
     return charts
 
+
 def get_features(charts):
     '''
     Add columns to charts DataFrame containing Spotify track characteristics
@@ -33,17 +35,24 @@ def get_features(charts):
         The same DataFrame as the input, but with columns added for the songs'
             relevant Spotify characteristics
     '''
+    # Define attributes we want to keep
     ATTRIBUTES = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
-            'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo',
-            'duration_ms', 'time_signature']
+                  'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo',
+                  'duration_ms', 'time_signature']
+
+    # Batch request audio features 100 at a time per Spotify docs
     for i in range(0, 1000, 100):
         subset = charts.iloc[i:i+100]
-        audio_features = spotify_data.sp.audio_features_finder(subset['trackid'])
+        audio_features = spotify_data.sp.audio_features_finder(
+            subset['trackid'])
+
+        # Create Dataframe of wanted and set index to merge into main dataframe
         toadd = pd.DataFrame(audio_features)[ATTRIBUTES]
         toadd.set_index(np.arange(i, i+100), inplace=True)
         charts.update(toadd)
-    
+
     return charts
+
 
 def clean_data(charts):
     '''
@@ -53,6 +62,7 @@ def clean_data(charts):
     charts = charts.dropna()
     charts.reset_index(drop=True, inplace=True)
     return charts
+
 
 def main():
     '''
@@ -66,8 +76,6 @@ def main():
     charts_features = get_features(charts_clean)
     charts_features.to_feather('charts_clean.feather')
 
+
 if __name__ == '__main__':
     main()
-
-
-
