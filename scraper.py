@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
+
 def scrape_chart(url, week):
     '''
     Scrape a singular Billboard Hot 100 chart from a given week
@@ -26,7 +27,7 @@ def scrape_chart(url, week):
         songs['rank'].append(row.li.find('span').get_text().strip())
         songs['title'].append(row.find('h3').get_text().strip())
         songs['artist'].append(row.find_all(
-                'li')[3].find('span').get_text().strip())
+            'li')[3].find('span').get_text().strip())
 
     songs['week'] = len(songs['rank']) * [week]
     return pd.DataFrame(songs)
@@ -60,6 +61,7 @@ def scrape_all():
 def main():
     '''Scrape all charts when run directly'''
     scrape_all()
+
 
 if __name__ == '__main__':
     main()

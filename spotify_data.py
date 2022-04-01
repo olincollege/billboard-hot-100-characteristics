@@ -11,6 +11,7 @@ ATTRIBUTES = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness'
               'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo',
               'duration_ms', 'time_signature']
 
+
 def get_track_ids(charts):
     '''
     Add column to charts DataFrame containing Spotify track IDs for each song
@@ -26,6 +27,7 @@ def get_track_ids(charts):
     '''
     charts['trackid'] = sp.track_id_finder(charts['title'], charts['artist'])
     return charts
+
 
 def get_features(charts):
     '''
@@ -62,6 +64,7 @@ def clean_data(charts):
     charts.reset_index(drop=True, inplace=True)
     return charts
 
+
 def get_date_information(charts):
     '''
     Add more column information including the decade and the year of the songs,
@@ -78,21 +81,22 @@ def get_date_information(charts):
     '''
     decade = []
     year_info = []
-    for i in range(len(charts.loc[:,"week"])):
+    for i in range(len(charts.loc[:, 'week'])):
         # Checking the decade of the songs for each song
-        year = str(charts.loc[:,"week"][i])[0:4]
+        year = str(charts.loc[:, 'week'][i])[0:4]
         decade_year = int(year[2])
         year_info.append(year)
-        if decade_year in range(5,10):
+        if decade_year in range(5, 10):
             decade.append(f"{decade_year}0's")
         else:
             decade.append(f"20{decade_year}0's")
 
     # Adding the Decade and Year information into the DataFrame
-    charts = charts.assign(decade = decade, year = year_info)
+    charts = charts.assign(decade=decade, year=year_info)
     # Converting the week column to dates
     charts['week'] = pd.to_datetime(charts['week'])
     return charts
+
 
 def main():
     '''

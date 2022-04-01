@@ -7,6 +7,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import pandas as pd
 
+
 class SpotifyAPI:
     '''
     Wrapper class for spotify API that handles authentication and wraps the
@@ -61,7 +62,7 @@ class SpotifyAPI:
                 q=f"track:{song} artist:{artist}", limit=1,
                 offset=0, type='track', market="US")
 
-            if (items := search_results["tracks"]["items"]):
+            if items := search_results["tracks"]["items"]:
                 ids.append(items[0]['id'])
             else:
                 # Results not found

@@ -4,6 +4,7 @@ Merge and clean individual data files created from scraper.py into one dataset
 
 import pandas as pd
 
+
 def merge():
     '''
     Read weekly charts from data folder and combine them into one Pandas
